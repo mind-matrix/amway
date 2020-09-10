@@ -27,7 +27,7 @@
                                 Date of Birth: {{ profile.dob }}
                             </v-col>
                         </v-row>
-                        <v-row>
+                        <v-row justify="center">
                             <v-col cols="12">
                                 <v-simple-table fixed-header height="300px">
                                     <template v-slot:default>
@@ -91,6 +91,9 @@
                                     </template>
                                 </v-simple-table>
                             </v-col>
+                            <v-col cols="12" md="6">
+                                <bar-chart v-if="!chart.loading" :chart-data="chart.data" ::options="chart.options"></bar-chart>
+                            </v-col>
                         </v-row>
                     </div>
                 </template>
@@ -112,12 +115,35 @@
 import { ProfileService } from '~/services/profile.services';
 import { ProductService } from '~/services/product.services';
 
+import BarChart from '~/charts/BarChart';
+
 export default {
     props: ['id'],
+    components: {
+        BarChart
+    },
     data: () => ({
         profile: null,
         profileService: null,
-        productService: null
+        productService: null,
+        chart: {
+            loading: true,
+            data: {
+                labels: [],
+                datasets: []
+            },
+            options: {
+                responsive: true,
+                barValueSpacing: 20,
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            min: 0,
+                        }
+                    }]
+                }
+            }
+        }
     }),
     methods: {
         sum(products, key, alt = false) {
@@ -134,6 +160,20 @@ export default {
             product.alt = this.productService.getAlternative(product.type);
         }
         this.profile = profile;
+        this.chart.data.labels = this.profile.products.map(product => product.type);
+        this.chart.data.datasets = [
+            {
+                label: "Current",
+                backgroundColor: "yellow",
+                data: this.profile.products.map(product => product.yearly)
+            },
+            {
+                label: "Amway",
+                backgroundColor: "blue",
+                data: this.profile.products.map(product => product.alt.yearly)
+            }
+        ];
+        this.chart.loading = false;
     }
 }
 </script>

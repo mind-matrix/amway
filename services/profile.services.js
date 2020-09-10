@@ -70,6 +70,7 @@ export class ProfileService {
             delete data['id'];
         let selectedProfiles = await this.find(filter);
         for(let profile of selectedProfiles) {
+            data['id'] = profile.id;
             profile = _.merge(profile, data);
             profile.updatedAt = new Date();
             this.profiles[profile.id] = profile;
