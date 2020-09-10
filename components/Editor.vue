@@ -4,22 +4,48 @@
             <v-card-text>
                 <v-row>
                     <v-col cols="12" md="6">
-                        <v-text-field v-model="profile.name" label="Name" dense outlined />
+                        <v-text-field v-model="profile.name" prepend-icon="mdi-account" label="Name" dense outlined />
                     </v-col>
                     <v-col cols="12" md="6">
-                        <v-text-field v-model="profile.family" label="Family Member" dense outlined />
+                        <v-text-field v-model="profile.family" prepend-icon="mdi-account-group" label="Family Member" dense outlined />
                     </v-col>
                     <v-col cols="12" md="6">
-                        <v-text-field v-model="profile.contact" label="Contact No." dense outlined />
+                        <v-text-field v-model="profile.contact" prepend-icon="mdi-phone" label="Contact No." dense outlined />
                     </v-col>
                     <v-col cols="12" md="6">
-                        <v-text-field v-model="profile.email" label="Email ID" dense outlined />
+                        <v-text-field v-model="profile.email" prepend-icon="mdi-email" label="Email ID" dense outlined />
                     </v-col>
                     <v-col cols="12" md="6">
-                        <v-text-field v-model="profile.postal" label="Postal Address" dense outlined />
+                        <v-text-field v-model="profile.postal" prepend-icon="mdi-mailbox-open" label="Postal Address" dense outlined />
                     </v-col>
                     <v-col cols="12" md="6">
-                        <v-text-field v-model="profile.dob" label="Date of Birth" dense outlined />
+                        <v-menu
+                            ref="dobmenu"
+                            v-model="dobmenu"
+                            :close-on-content-click="false"
+                            :return-value.sync="profile.dob"
+                            transition="scale-transition"
+                            offset-y
+                            min-width="290px"
+                        >
+                            <template v-slot:activator="{ on, attrs }">
+                            <v-text-field
+                                v-model="profile.dob"
+                                label="Date of Birth"
+                                outlined
+                                dense
+                                prepend-icon="mdi-calendar"
+                                readonly
+                                v-bind="attrs"
+                                v-on="on"
+                            ></v-text-field>
+                            </template>
+                            <v-date-picker v-model="profile.dob" no-title scrollable>
+                                <v-spacer></v-spacer>
+                                <v-btn text color="primary" @click="dobmenu = false">Cancel</v-btn>
+                                <v-btn text color="primary" @click="$refs.dobmenu.save(date)">OK</v-btn>
+                            </v-date-picker>
+                        </v-menu>
                     </v-col>
                 </v-row>
                 <v-autocomplete
@@ -162,6 +188,7 @@ export default {
             dob: null,
             products: [],
         },
+        dobmenu: false,
         previewDialog: false,
         profileService: null,
         saving: false
