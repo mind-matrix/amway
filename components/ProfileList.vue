@@ -12,7 +12,7 @@
                     create
                 </v-btn>
                 <v-list>
-                    <v-list-item class="grey darken-3" v-for="profile in profiles" :key="profile.id">
+                    <v-list-item :class="[$vuetify.theme.dark ? 'grey darken-3' : 'grey lighten-3', 'mb-2']" v-for="profile in profiles" :key="profile.id">
                         <v-list-item-content>
                             <v-list-item-title>
                                 {{ profile.name }}

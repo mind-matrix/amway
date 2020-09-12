@@ -111,7 +111,7 @@
             <v-card>
                 <v-card-title>Preview</v-card-title>
                 <v-card-text>
-                    <viewer :id="_id" />
+                    <viewer :id="$data._id" />
                 </v-card-text>
                 <v-card-actions>
                     <v-btn color="primary" @click="save">
