@@ -64,7 +64,7 @@
 </template>
 
 <script>
-import { ProfileService } from '~/services/profile.services';
+import ProfileService from '~/services/profile.services';
 
 export default {
     props: {

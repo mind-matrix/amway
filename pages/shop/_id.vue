@@ -1,5 +1,7 @@
 <template>
-    <viewer :id="$route.params.id" />
+    <v-container fluid>
+        <viewer :id="$route.params.id" />
+    </v-container>
 </template>
 
 <script>

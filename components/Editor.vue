@@ -102,7 +102,7 @@
                 </v-row>
             </v-card-text>
             <v-card-actions>
-                <v-btn color="primary" @click="preview">
+                <v-btn :disabled="saving" color="primary" @click="preview">
                     save
                 </v-btn>
             </v-card-actions>
@@ -111,44 +111,14 @@
             <v-card>
                 <v-card-title>Preview</v-card-title>
                 <v-card-text>
-                    <v-simple-table fixed-header height="300px">
-                        <template v-slot:default>
-                            <thead>
-                                <tr>
-                                    <th colspan="5"></th>
-                                    <th colspan="2" scope="colgroup">Effective Cost</th>
-                                </tr>
-                                <tr>
-                                    <th class="text-left">Product Type</th>
-                                    <th class="text-left">Brand</th>
-                                    <th class="text-left">Size</th>
-                                    <th class="text-left">Life</th>
-                                    <th class="text-left">Cost</th>
-                                    <th class="text-left">Monthly</th>
-                                    <th class="text-left">Yearly</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr v-for="(product, index) in profile.products" :key="index">
-                                    <td>{{ product.type }}</td>
-                                    <td>{{ product.brand }}</td>
-                                    <td>{{ product.size }}</td>
-                                    <td>{{ product.life }}</td>
-                                    <td>{{ product.cost }}</td>
-                                    <td>{{ product.monthly }}</td>
-                                    <td>{{ product.yearly }}</td>
-                                </tr>
-                            </tbody>
-                        </template>
-                    </v-simple-table>
+                    <viewer :id="_id" />
                 </v-card-text>
                 <v-card-actions>
-                    <v-spacer></v-spacer>
-                    <v-btn :disabled="saving" color="primary" @click="save().then(() => { previewDialog = false })">
-                        {{ saving ? 'saving...' : 'save' }}
+                    <v-btn color="primary" @click="save">
+                        done
                     </v-btn>
-                    <v-btn :disabled="saving" color="secondary" @click="previewDialog = false">
-                        cancel
+                    <v-btn color="secondary" @click="previewDialog=false">
+                        update
                     </v-btn>
                 </v-card-actions>
             </v-card>
@@ -157,18 +127,16 @@
 </template>
 
 <script>
-import { ProfileService } from '~/services/profile.services';
-
-const availableProducts = [
-    'Toothpaste',
-    'Shampoo',
-    'Detergent',
-    'Floor Cleaner'
-];
+import ProfileService from '~/services/profile.services';
+import Viewer from '~/components/Viewer';
 
 export default {
     props: ['id'],
+    components: {
+        Viewer
+    },
     data: () => ({
+        _id: null,
         autocomplete: {
             text: null,
             items: [],
@@ -178,7 +146,7 @@ export default {
             placeholder: 'Search for a product...',
             prependIcon: 'mdi-database-search'
         },
-        search: null,
+        search: '',
         profile: {
             name: null,
             family: null,
@@ -201,7 +169,7 @@ export default {
         add() {
             if (this.verify(this.autocomplete.text)) {
                 this.profile.products.push({ type: this.autocomplete.text, brand: '', size: '', life: '', cost: '', monthly: '', yearly: '' });
-                this.autocomplete.text = '';
+                this.autocomplete.text = null;
                 this.autocomplete.items = [];
             }
         },
@@ -216,18 +184,19 @@ export default {
 
             this.autocomplete.loading = false;
         },
-        preview() {
-            this.previewDialog = true;
-        },
-        async save() {
+        async preview() {
             this.saving = true;
-            if (this.id) {
+            if (this._id) {
                 await this.profileService.update({ id: this.id }, this.profile);
             } else {
-                await this.profileService.create(this.profile);
+                let profile = await this.profileService.create(this.profile);
+                this._id = profile.id;
             }
             await this.profileService.save();
+            this.previewDialog = true;
             this.saving = false;
+        },
+        async save() {
             this.$router.push(`/shop/`);
         },
         round(decimal, places) {
@@ -244,6 +213,7 @@ export default {
         }
     },
     async mounted() {
+        this._id = this.id;
         this.profileService = new ProfileService();
         if (this.id) {
             this.profile = await this.profileService.findOne({ id: this.id });

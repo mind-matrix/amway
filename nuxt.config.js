@@ -15,6 +15,7 @@ export default {
   ** Headers of the page
   ** See https://nuxtjs.org/api/configuration-head
   */
+  dev: process.env.NODE_ENV !== 'production',
   head: {
     titleTemplate: '%s - ' + process.env.npm_package_name,
     title: process.env.npm_package_name || '',
@@ -37,7 +38,8 @@ export default {
   ** https://nuxtjs.org/guide/plugins
   */
   plugins: [
-    'plugins/vue-chartjs.client.js'
+    'plugins/vue-chartjs.client.js',
+    'plugins/firestore.client.js',
   ],
   /*
   ** Auto import components
@@ -49,6 +51,7 @@ export default {
   */
   buildModules: [
     '@nuxtjs/vuetify',
+    '@nuxt/typescript-build'
   ],
   /*
   ** Nuxt.js modules
@@ -69,7 +72,7 @@ export default {
   vuetify: {
     customVariables: ['~/assets/variables.scss'],
     theme: {
-      dark: true,
+      dark: false,
       themes: {
         dark: {
           primary: colors.blue.darken2,
@@ -88,5 +91,10 @@ export default {
   ** See https://nuxtjs.org/api/configuration-build/
   */
   build: {
-  }
+  },
+  /**
+   * Environment Variables - Client Side
+   */
+  env: {
+  },
 }
