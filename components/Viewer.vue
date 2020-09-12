@@ -143,30 +143,34 @@ export default {
             if (alt)
                 return products.map(product => product.alt).reduce((a, v) => a + v[key], 0);
             return products.reduce((a,v) => a + v[key], 0);
+        },
+        async reload() {
+            let profile = await this.profileService.findOne({ id: this.id });
+            for (let product of profile.products) {
+                product.alt = await this.productService.getAlternative(product.type);
+            }
+            this.profile = profile;
+            this.chart.data.labels = this.profile.products.map(product => product.type);
+            this.chart.data.datasets = [
+                {
+                    label: "Current",
+                    backgroundColor: "yellow",
+                    data: this.profile.products.map(product => product.yearly)
+                },
+                {
+                    label: "Amway",
+                    backgroundColor: "blue",
+                    data: this.profile.products.map(product => product.alt.yearly)
+                }
+            ];
+            this.$forceUpdate();
+            this.chart.loading = false;
         }
     },
     async mounted() {
-        this.profileService = new ProfileService();
-        this.productService = new ProductService();
-        let profile = await this.profileService.findOne({ id: this.id });
-        for (let product of profile.products) {
-            product.alt = this.productService.getAlternative(product.type);
-        }
-        this.profile = profile;
-        this.chart.data.labels = this.profile.products.map(product => product.type);
-        this.chart.data.datasets = [
-            {
-                label: "Current",
-                backgroundColor: "yellow",
-                data: this.profile.products.map(product => product.yearly)
-            },
-            {
-                label: "Amway",
-                backgroundColor: "blue",
-                data: this.profile.products.map(product => product.alt.yearly)
-            }
-        ];
-        this.chart.loading = false;
+        this.profileService = new ProfileService(this.$fireStore);
+        this.productService = new ProductService(this.$fireStore);
+        this.reload();
     }
 }
 </script>

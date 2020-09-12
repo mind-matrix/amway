@@ -1,7 +1,7 @@
 import _ from 'lodash';
 import uniqid from 'uniqid';
 import { firestore } from 'firebase';
-import database, { IFirebaseConfig, IProfile } from './common';
+import { IFirebaseConfig, IProfile } from './common';
 import config from '~/nuxt.config';
 
 export abstract class ProfileService {
@@ -124,7 +124,7 @@ export class FirebaseProfileService extends ProfileService {
     db: firestore.Firestore;
     config: IFirebaseConfig;
 
-    constructor(config: IFirebaseConfig = { collection: "profiles" }) {
+    constructor(public database: firestore.Firestore, config: IFirebaseConfig = { collection: "profiles" }) {
         super();
         this.db = database;
         this.config = config;

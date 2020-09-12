@@ -1,4 +1,4 @@
-import firebase from '~/plugins/firestore.client';
+// import app from '~/plugins/firestore.client';
 
 export interface IAlternative {
     name: string;
@@ -26,6 +26,6 @@ export interface IFirebaseConfig {
     doc?: string;
 };
 
-export default firebase.firestore();
+// export default app.firestore();
 
 

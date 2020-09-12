@@ -29,21 +29,21 @@
                             min-width="290px"
                         >
                             <template v-slot:activator="{ on, attrs }">
-                            <v-text-field
-                                v-model="profile.dob"
-                                label="Date of Birth"
-                                outlined
-                                dense
-                                prepend-icon="mdi-calendar"
-                                readonly
-                                v-bind="attrs"
-                                v-on="on"
-                            ></v-text-field>
+                                <v-text-field
+                                    v-model="profile.dob"
+                                    label="Date of Birth"
+                                    outlined
+                                    dense
+                                    prepend-icon="mdi-calendar"
+                                    readonly
+                                    v-bind="attrs"
+                                    v-on="on"
+                                ></v-text-field>
                             </template>
                             <v-date-picker v-model="profile.dob" no-title scrollable>
                                 <v-spacer></v-spacer>
                                 <v-btn text color="primary" @click="dobmenu = false">Cancel</v-btn>
-                                <v-btn text color="primary" @click="$refs.dobmenu.save(date)">OK</v-btn>
+                                <v-btn text color="primary" @click="$refs.dobmenu.save(profile.dob)">OK</v-btn>
                             </v-date-picker>
                         </v-menu>
                     </v-col>
@@ -111,7 +111,7 @@
             <v-card>
                 <v-card-title>Preview</v-card-title>
                 <v-card-text>
-                    <viewer :id="$data._id" />
+                    <viewer ref="viewer" :id="profile_id" />
                 </v-card-text>
                 <v-card-actions>
                     <v-btn color="primary" @click="save">
@@ -128,6 +128,7 @@
 
 <script>
 import ProfileService from '~/services/profile.services';
+import ProductService from '~/services/product.services';
 import Viewer from '~/components/Viewer';
 
 export default {
@@ -136,7 +137,7 @@ export default {
         Viewer
     },
     data: () => ({
-        _id: null,
+        profile_id: null,
         autocomplete: {
             text: null,
             items: [],
@@ -157,17 +158,19 @@ export default {
             products: [],
         },
         dobmenu: false,
+        dob: null,
         previewDialog: false,
+        productService: null,
         profileService: null,
         saving: false
     }),
     methods: {
-        verify(type) {
+        async verify(type) {
             // verify if the type is allowed.
-            return availableProducts.includes(type);
+            return await this.productService.verifyProduct(type);
         },
-        add() {
-            if (this.verify(this.autocomplete.text)) {
+        async add() {
+            if (await this.verify(this.autocomplete.text)) {
                 this.profile.products.push({ type: this.autocomplete.text, brand: '', size: '', life: '', cost: '', monthly: '', yearly: '' });
                 this.autocomplete.text = null;
                 this.autocomplete.items = [];
@@ -180,20 +183,24 @@ export default {
             this.autocomplete.loading = true;
             
             // fetch items
-            this.autocomplete.items = availableProducts.filter(item => item.includes(query));
+            this.autocomplete.items = (await this.productService.getAvailableProducts()).filter(item => item.toLowerCase().includes(query.toLowerCase()));
 
             this.autocomplete.loading = false;
         },
         async preview() {
             this.saving = true;
-            if (this._id) {
-                await this.profileService.update({ id: this.id }, this.profile);
+            if (this.profile_id) {
+                await this.profileService.updateOne({ id: this.profile_id }, this.profile);
+                await this.profileService.save();
+                if (!this.previewDialog)
+                    this.previewDialog = true;
+                this.$forceUpdate();
             } else {
                 let profile = await this.profileService.create(this.profile);
-                this._id = profile.id;
+                this.profile_id = profile.id;
+                await this.profileService.save();
+                this.previewDialog = true;
             }
-            await this.profileService.save();
-            this.previewDialog = true;
             this.saving = false;
         },
         async save() {
@@ -208,13 +215,14 @@ export default {
         }
     },
     watch: {
-        search(val) {
-            val && val !== this.autocomplete.text && this.queryProducts(val);
+        async search(val) {
+            val && val !== this.autocomplete.text && await this.queryProducts(val);
         }
     },
     async mounted() {
-        this._id = this.id;
-        this.profileService = new ProfileService();
+        this.profile_id = this.id;
+        this.profileService = new ProfileService(this.$fireStore);
+        this.productService = new ProductService(this.$fireStore);
         if (this.id) {
             this.profile = await this.profileService.findOne({ id: this.id });
         }

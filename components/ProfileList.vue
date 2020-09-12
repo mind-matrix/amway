@@ -95,7 +95,7 @@ export default {
     }),
     async mounted() {
         console.log(this.createBtn);
-        this.profileService = new ProfileService();
+        this.profileService = new ProfileService(this.$fireStore);
         this.profiles = await this.profileService.find();
     }
 }

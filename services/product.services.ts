@@ -1,5 +1,5 @@
 import { firestore } from "firebase";
-import database, { IAlternative, IFirebaseConfig, IProfile } from "./common";
+import { IAlternative, IFirebaseConfig, IProfile } from "./common";
 import config from '~/nuxt.config';
 
 let availableProducts: string[] = [
@@ -16,6 +16,7 @@ const alternatives: { [key: string]: IAlternative } = {
 };
 
 export abstract class ProductService {
+    abstract verifyProduct(product: string): Promise<boolean>;
     abstract getAvailableProducts(): Promise<string[]>;
     abstract setAvailableProducts(products: string[]): Promise<void>;
     abstract getAlternative(type: string): Promise<IProfile>;
@@ -35,6 +36,10 @@ export class LocalProductService extends ProductService {
         product.monthly = this.round(product.cost/product.life, 2) || 0;
         product.yearly = this.round(12*product.cost/product.life, 2) || 0;
         return product;
+    }
+
+    async verifyProduct(product: string) {
+        return availableProducts.findIndex(p => p.toLowerCase() == product.toLowerCase()) !== -1;
     }
 
     async getAvailableProducts() {
@@ -59,7 +64,7 @@ export class FirebaseProductService extends ProductService {
     db: firestore.Firestore;
     config: IFirebaseConfig;
 
-    constructor(config: IFirebaseConfig = { collection: "products", doc: "PRODUCTS" }) {
+    constructor(public database: firestore.Firestore, config: IFirebaseConfig = { collection: "products", doc: "PRODUCTS" }) {
         super();
         this.db = database;
         this.config = config;
@@ -73,6 +78,11 @@ export class FirebaseProductService extends ProductService {
         product.monthly = this.round(product.cost/product.life, 2) || 0;
         product.yearly = this.round(12*product.cost/product.life, 2) || 0;
         return product;
+    }
+
+    async verifyProduct(product: string) {
+        let data = (await this.db.collection(this.config.collection).doc(this.config.doc).get()).data();
+        return data["available"].findIndex((p: string) => p == product) !== -1;
     }
 
     async getAvailableProducts() {
