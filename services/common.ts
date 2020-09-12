@@ -1,4 +1,4 @@
-import firebase from 'firebase';
+import firebase from '~/plugins/firestore.client';
 
 export interface IAlternative {
     name: string;
