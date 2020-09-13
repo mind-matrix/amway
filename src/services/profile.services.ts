@@ -2,7 +2,6 @@ import _ from 'lodash';
 import uniqid from 'uniqid';
 import { firestore } from 'firebase';
 import { IFirebaseConfig, IProfile } from './common';
-import config from '~/nuxt.config';
 
 export abstract class ProfileService {
     abstract save(): void;
@@ -222,6 +221,6 @@ export class FirebaseProfileService extends ProfileService {
 
 }
 
-const DefaultService = (config.dev) ? LocalProfileService : FirebaseProfileService
+const DefaultService = (process.env.DEV) ? LocalProfileService : FirebaseProfileService
 
 export default DefaultService;

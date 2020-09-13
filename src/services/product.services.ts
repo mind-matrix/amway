@@ -1,6 +1,5 @@
 import { firestore } from "firebase";
 import { IAlternative, IFirebaseConfig, IProfile } from "./common";
-import config from '~/nuxt.config';
 
 let availableProducts: string[] = [
     'Toothpaste',
@@ -105,6 +104,6 @@ export class FirebaseProductService extends ProductService {
     }
 }
 
-const DefaultProductService = (config.dev) ? LocalProductService : FirebaseProductService;
+const DefaultProductService = (process.env.DEV) ? LocalProductService : FirebaseProductService;
 
 export default DefaultProductService;

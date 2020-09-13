@@ -1,0 +1,21 @@
+{
+  "entry": "server.js",
+  "files": {
+    "pages/index.js": "pages/index.js",
+    "pages/inspire.js": "pages/inspire.js",
+    "pages/shop/_id.js": "pages/shop/_id.js",
+    "pages/shop/edit/_id.js": "pages/shop/edit/_id.js",
+    "pages/shop/edit/index.js": "pages/shop/edit/index.js",
+    "pages/shop/index.js": "pages/shop/index.js",
+    "server.js": "server.js"
+  },
+  "maps": {
+    "pages/index.js": "pages/index.js.map",
+    "pages/inspire.js": "pages/inspire.js.map",
+    "pages/shop/_id.js": "pages/shop/_id.js.map",
+    "pages/shop/edit/_id.js": "pages/shop/edit/_id.js.map",
+    "pages/shop/edit/index.js": "pages/shop/edit/index.js.map",
+    "pages/shop/index.js": "pages/shop/index.js.map",
+    "server.js": "server.js.map"
+  }
+}

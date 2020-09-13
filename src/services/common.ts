@@ -1,5 +1,3 @@
-// import app from '~/plugins/firestore.client';
-
 export interface IAlternative {
     name: string;
     size: string;
@@ -25,7 +23,3 @@ export interface IFirebaseConfig {
     collection: string;
     doc?: string;
 };
-
-// export default app.firestore();
-
-

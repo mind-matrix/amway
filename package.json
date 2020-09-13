@@ -3,13 +3,27 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "dev": "nuxt",
+    "dev": "cross-env NODE_ENV=development nodemon src/server/index.js --watch server",
     "build": "nuxt build",
-    "start": "nuxt start",
+    "start": "cross-env NODE_ENV=production node src/server/index.js",
     "generate": "nuxt generate",
     "test": "npm run test:unit && npm run test:e2e",
     "test:unit": "cross-env TEST=unit ava ./test/specs/**/*",
-    "test:e2e": "cross-env TEST=e2e ava ./test/e2e/**/*"
+    "test:e2e": "cross-env TEST=e2e ava ./test/e2e/**/*",
+    "build:firebase": "npm run clean && npm run build && npm run copy && cd \"functions\" && npm install",
+
+    "clean": "npm run clean:public && npm run clean:functions && npm run clean:static",
+    "clean:functions": "rimraf \"functions/node_modules\" && rimraf \"functions/.nuxt\"",
+    "clean:public": "rimraf \"public/**/*.*!(md)\" && rimraf \"public/_nuxt\"",
+    "clean:static": "rimraf \"src/static/sw.js\"",
+
+    "copy": "npm run copy:nuxt && npm run copy:static",
+    "copy:nuxt": "xcopy \"functions\\.nuxt\\dist\\*\" \"public\\_nuxt\\\" /E /Y",
+    "copy:static": "xcopy \"src\\static\\*\" \"public\\\" /E /Y",
+
+    "start:firebase": "firebase serve --only functions,hosting",
+
+    "deploy": "firebase deploy --only functions,hosting"
   },
   "dependencies": {
     "@nuxtjs/axios": "^5.12.0",
@@ -18,6 +32,7 @@
     "@types/uniqid": "^5.2.0",
     "chart.js": "^2.9.3",
     "firebase": "^7.20.0",
+    "firebase-functions": "^3.11.0",
     "lodash": "^4.17.20",
     "nuxt": "^2.14.0",
     "uniqid": "^5.2.0",
