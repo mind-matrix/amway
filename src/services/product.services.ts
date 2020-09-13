@@ -104,6 +104,6 @@ export class FirebaseProductService extends ProductService {
     }
 }
 
-const DefaultProductService = (process.env.DEV) ? LocalProductService : FirebaseProductService;
+const DefaultProductService = (process.env.MODE !== "production") ? LocalProductService : FirebaseProductService;
 
 export default DefaultProductService;

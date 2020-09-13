@@ -221,6 +221,6 @@ export class FirebaseProfileService extends ProfileService {
 
 }
 
-const DefaultService = (process.env.DEV) ? LocalProfileService : FirebaseProfileService
+const DefaultService = (process.env.MODE !== "production") ? LocalProfileService : FirebaseProfileService
 
 export default DefaultService;
