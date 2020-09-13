@@ -155,7 +155,7 @@ export class FirebaseProfileService extends ProfileService {
      */
     async findOne(filter: any) {
         if (filter.id && _.keys(filter).length === 1)
-            return await this.db.collection(this.config.collection).doc(filter.id).get();
+            return await (await this.db.collection(this.config.collection).doc(filter.id).get()).data();
         let profiles = await this.find(filter);
         let profile = profiles.find(profile => _.isMatch(profile, filter));
         return <IProfile>profile;

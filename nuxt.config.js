@@ -15,7 +15,8 @@ export default {
   ** Headers of the page
   ** See https://nuxtjs.org/api/configuration-head
   */
-  dev: process.env.NODE_ENV !== 'production',
+  // dev: process.env.NODE_ENV !== 'production',
+  dev: false,
   head: {
     titleTemplate: '%s - ' + process.env.npm_package_name,
     title: process.env.npm_package_name || '',

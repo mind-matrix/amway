@@ -146,6 +146,7 @@ export default {
         },
         async reload() {
             let profile = await this.profileService.findOne({ id: this.id });
+            console.log(profile);
             for (let product of profile.products) {
                 product.alt = await this.productService.getAlternative(product.type);
             }

@@ -96,7 +96,7 @@ export class FirebaseProductService extends ProductService {
 
     async getAlternative(type: string) {
         let data = (await this.db.collection(this.config.collection).doc(this.config.doc).get()).data();
-        return data["alternatives"][type] || { 'Generic': { name: null, size: '', life: 0, cost: 0 } };
+        return this.computeCosts(data["alternatives"][type]) || { 'Generic': { name: null, size: '', life: 0, cost: 0, monthly: 0, yearly: 0 } };
     }
 
     async setAlternative(type: any, alt: any) {
